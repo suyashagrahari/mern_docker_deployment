@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  front:
+    build: 
+      context: ./react-docker
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    container_name: react-container
+    environment:
+      - WATCH_PACK_POLLING=true
+    networks:
+      - mern-stack-network 
+    volumes:
+      - ./react-docker:/app
+    depends_on:
+      - backend
+  
+  backend:
+    build: 
+      context: ./express-docker
+      dockerfile: Dockerfile
+    ports:
+      - 5500:5500
+    container_name: express-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - ./express-docker:/app
+    depends_on:
+      - mongo
+  
+  mongo:
+    image: mongo    # Fixed syntax: `build` removed, `image` added
+    ports:
+      - 27017:27017
+    container_name: mongo-container
+    volumes:
+      - mongoData:/data/db   # Volume name corrected
+    networks:
+      - mern-stack-network
+    
+networks:
+  mern-stack-network:
+
+volumes:
+  mongoData:
